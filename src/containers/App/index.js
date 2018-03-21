@@ -6,6 +6,6 @@ import Scheduler from 'components/Scheduler';
 
 export default class App extends Component {
     render () {
-        return 'Scheduler';
+        return <Scheduler />;
     }
 }
