@@ -110,11 +110,12 @@
             display: flex;
 
             & span {
-                margin: 0 1.9rem;
+                margin: 0 0.9rem;
                 cursor: pointer;
             }
 
             & code {
+                font-family: roboto, sans-serif;
                 font-size: 2rem;
                 letter-spacing: .1rem;
                 color: $paletteColor7;
