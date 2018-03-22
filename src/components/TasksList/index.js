@@ -13,12 +13,13 @@ export default class TasksList extends Component {
 
     render() {
         const { tasks } = this.props
-        const arrTasks = tasks.map((task, index) => (
-            <Task
-                { ...task }
-                key={task.id}
+        const arrTasks = tasks.map((taskWithApiStatus) => {
+            const plainTask = taskWithApiStatus.task
+            return <Task
+                {...plainTask}
+                key={plainTask.id}
             />
-        ))
+        })
 
         return (
             <ul>

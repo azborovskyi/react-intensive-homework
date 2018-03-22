@@ -1,11 +1,11 @@
 // Core
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 // Components
-import Scheduler from 'components/Scheduler';
+import ConnectedScheduler from '../ConnectedScheduler'
 
-export default class App extends Component {
-    render () {
-        return <Scheduler />;
-    }
+const App = ({ store }) => {
+    return <ConnectedScheduler store={ store } />;
 }
+
+export default App

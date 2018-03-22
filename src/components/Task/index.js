@@ -10,7 +10,7 @@ import Delete from '../../theme/assets/Delete'
 export default class Task extends Component {
 
     render () {
-        const { id, title } = this.props
+        const { id, message } = this.props
 
         return (
             <li className = { Styles.task }>
@@ -19,7 +19,7 @@ export default class Task extends Component {
                         color1 = { '#3B8EF3' }
                         color2 = { '#fff' }
                     />
-                    <input value = { title } readOnly/>
+                    <input value = { message } readOnly/>
                 </div>
                 <Star />
                 <Edit />
