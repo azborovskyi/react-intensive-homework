@@ -30,7 +30,7 @@
         }
 
         & input {
-            padding: 0px;
+            padding: 0;
             width: 100%;
             border: 0;
         }
@@ -51,5 +51,18 @@
         & input {
             background-color: $paletteColor8;
         }
+    }
+}
+
+.editing {
+    border-color: $paletteColor3;
+    border-width: 1px;
+    border-style: solid;
+}
+
+input {
+    &.completed {
+        text-decoration: line-through;
+        text-decoration-color: $paletteColor9;
     }
 }

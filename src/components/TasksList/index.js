@@ -1,30 +1,37 @@
 // Core
-import React, { Component } from 'react'
-import { string, array } from 'prop-types'
+import React, { Component } from 'react';
+import { string, array } from 'prop-types';
 
 // Instruments
-import Task from '../Task'
+import Task from '../Task';
+import FlipMove from 'react-flip-move';
 
 export default class TasksList extends Component {
 
     static propTypes = {
-        tasks: array.isRequired
+        tasksAndStatus: array.isRequired,
     }
 
-    render() {
-        const { tasks } = this.props
-        const arrTasks = tasks.map((taskWithApiStatus) => {
-            const plainTask = taskWithApiStatus.task
-            return <Task
-                {...plainTask}
-                key={plainTask.id}
-            />
-        })
+    render () {
+        const { tasksAndStatus } = this.props;
+        const arrTasks = tasksAndStatus.map((taskWithApiStatus) => {
+            const { task, apiStatus } = taskWithApiStatus;
+
+            return (
+                <Task
+                    apiStatus = { apiStatus }
+                    key = { task.id }
+                    task = { task }
+                />
+            );
+        });
 
         return (
             <ul>
-                { arrTasks }
+                <FlipMove>
+                    { arrTasks }
+                </FlipMove>
             </ul>
-        )
+        );
     }
 }

@@ -133,7 +133,7 @@ rules:
   brace-style: 1
   camelcase: 1
   capitalized-comments: 0
-  comma-dangle: [1, {
+  comma-dangle: [0, {
     "objects": "always-multiline"
   }]
   comma-spacing: 1
@@ -163,6 +163,7 @@ rules:
   newline-per-chained-call: 0
   no-array-constructor: 1
   no-bitwise: 1
+  no-continue: 1
   no-inline-comments: 0
   no-lonely-if: 1
   no-mixed-operators: 0
@@ -183,6 +184,7 @@ rules:
   operator-assignment: 1
   quotes: [1, "single", { "allowTemplateLiterals": true }]
   semi-spacing: 1
+  semi: 1
   space-before-blocks: 1
   space-before-function-paren: 1
   space-in-parens: 1

@@ -1,8 +1,8 @@
 // Core
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 // Instruments
-import Styles from './styles.scss'
+import Styles from './styles.scss';
 import HeaderSearch from '../HeaderSearch';
 import TasksList from '../TasksList';
 import TaskComposer from '../TaskComposer';
@@ -10,29 +10,35 @@ import CompleteAll from '../CompleteAll';
 
 export default class Scheduler extends Component {
 
-    componentDidMount() {
-        const { fetchAllTasks } = this.props
-        fetchAllTasks()
+    componentDidMount () {
+        const { fetchAllTasks } = this.props;
+
+        fetchAllTasks();
     }
 
-    render() {
-        const { tasks, onTaskCreate } = this.props
+    render () {
+        const { tasksAndStatus, onTaskCreate, completeAllTasks, someUncompletedTasks, filter } = this.props;
 
         return (
-            <section className={ Styles.scheduler } >
+            <section className = { Styles.scheduler } >
                 <main>
-                    <HeaderSearch />
+                    <HeaderSearch
+                        filterTextChange = { filter }
+                    />
                     <section>
                         <TaskComposer
-                            onTaskCreate={onTaskCreate}
+                            onTaskCreate = { onTaskCreate }
                         />
                         <TasksList
-                            tasks={ tasks }
+                            tasksAndStatus = { tasksAndStatus }
                         />
                     </section>
-                    <CompleteAll/>
+                    <CompleteAll
+                        checked = { !someUncompletedTasks }
+                        completeAllTasks = { completeAllTasks }
+                    />
                 </main>
             </section>
-        )
+        );
     }
 }
