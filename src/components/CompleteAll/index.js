@@ -7,7 +7,6 @@ import Checkbox from '../../theme/assets/Checkbox';
 export default class CompleteAll extends Component {
 
     onClickCompleteAllTasks = (event) => {
-        event.preventDefault();
         const { completeAllTasks, checked } = this.props;
 
         if (!checked) {

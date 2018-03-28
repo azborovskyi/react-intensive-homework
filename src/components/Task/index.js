@@ -1,68 +1,63 @@
 import React, { Component } from 'react';
 import Styles from './styles.scss';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 // Instruments
 import Checkbox from '../../theme/assets/Checkbox';
 import Star from '../../theme/assets/Star';
 import Edit from '../../theme/assets/Edit';
 import Delete from '../../theme/assets/Delete';
-import {
-    startTaskEditing,
-    editedTaskTextChange,
-    modifiedTaskSave,
-    finishTaskEditing,
-    deleteTask
-} from '../../actions';
+import * as editActions from '../../actions/taskEditing';
 
 let Task = class Task extends Component {
 
     _onEditClick = () => {
-        const { task, isEditing, dispatch, editedMessage } = this.props;
+        const { task, isEditing, actions, editedMessage } = this.props;
 
         if (task.completed) {
             return;
         }
         if (isEditing) {
-            dispatch(modifiedTaskSave({ ...task, message: editedMessage }));
-            dispatch(finishTaskEditing(task.id));
+            actions.modifiedTaskSave({ ...task, message: editedMessage });
+            actions.finishTaskEditing(task.id);
         } else {
-            dispatch(startTaskEditing(task.id));
+            actions.startTaskEditing(task.id);
             this.textInput.focus();
             this.textInput.setSelectionRange(task.message.length, task.message.length);
         }
     };
 
     _onFavoriteClick = () => {
-        const { task, dispatch } = this.props;
+        const { task, actions } = this.props;
 
-        dispatch(modifiedTaskSave({ ...task, favorite: !task.favorite }));
+        actions.modifiedTaskSave({ ...task, favorite: !task.favorite });
     };
 
     _onDeleteClick = () => {
-        const { task, dispatch } = this.props;
+        const { task, actions } = this.props;
 
-        dispatch(deleteTask(task));
+        actions.deleteTask(task);
     }
 
     _onCompleteClick = () => {
-        const { task, dispatch } = this.props;
+        const { task, actions } = this.props;
 
-        dispatch(modifiedTaskSave({ ...task, completed: !task.completed }));
+        actions.modifiedTaskSave({ ...task, completed: !task.completed });
     }
 
     _onKeyDown = (event) => {
-        const { task: { id }, dispatch } = this.props;
+        const { task: { id }, actions } = this.props;
 
         if (event.keyCode === 27) {
-            dispatch(finishTaskEditing(id));
+            actions.finishTaskEditing(id);
         }
     }
 
     _onMessageChange = ({ target: { value }}) => {
-        const { task: { id }, dispatch } = this.props;
+        const { task: { id }, actions } = this.props;
 
-        dispatch(editedTaskTextChange(id, value));
+        actions.editedTaskTextChange(id, value);
     }
 
     render () {
@@ -122,6 +117,8 @@ const mapStateToProps = (state, ownProps) => {
     };
 };
 
-Task = connect(mapStateToProps)(Task);
+const mapDispatchToProps = (dispatch) => ({ actions: bindActionCreators(editActions, dispatch) });
+
+Task = connect(mapStateToProps, mapDispatchToProps)(Task);
 
 export default Task;

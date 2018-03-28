@@ -1,19 +1,14 @@
 import * as actionType from '../actionTypes';
-import * as syncType from '../syncTypes';
-import moment from 'moment';
 import { maxMessageLength } from '../config';
 
 const defaultState = {
-    tasksAndStatus: [],
-    taskEditing:    null,
-    filterText:     null
+    tasks:       [],
+    taskEditing: null,
+    filterText:  null
 };
 
-const sortTasks = (tasksAndStatus) => {
-    return tasksAndStatus.sort((taskWithStatus1, taskWithStatus2) => {
-        const { task: task1 } = taskWithStatus1;
-        const { task: task2 } = taskWithStatus2;
-
+export const sortTasks = (tasks) => {
+    return tasks.sort((task1, task2) => {
         // Completed go last
         if (task1.completed !== task2.completed) {
             return task1.completed === true ? 1 : -1;
@@ -33,14 +28,15 @@ const sortTasks = (tasksAndStatus) => {
 };
 
 export default function rootReducer (state = defaultState, action) {
-    const newState = { ...state, tasksAndStatus: [...state.tasksAndStatus]};
+
+    const newState = { ...state, tasks: [...state.tasks]};
 
     switch (action.type) {
         case actionType.START_TASK_EDITING: {
             const { taskId } = action;
-            const editedMessage = state.tasksAndStatus.find((taskWithStatus) => taskWithStatus.task.id === taskId);
+            const editedMessage = newState.tasks.find((task) => task.id === taskId);
 
-            newState.taskEditing = { taskId, message: editedMessage ? editedMessage.task.message : '' };
+            newState.taskEditing = { taskId, message: editedMessage ? editedMessage.message : '' };
             break;
         }
 
@@ -67,52 +63,35 @@ export default function rootReducer (state = defaultState, action) {
         case actionType.FETCH_ALL_TASKS_SUCCESS: {
             const { tasks } = action;
 
-            newState.tasksAndStatus = sortTasks(tasks.map((plainTask) => ({
-                task:      plainTask,
-                apiStatus: { syncInProgress: null },
-            })));
-            break;
-        }
-
-        case actionType.CREATE_TASK_LOCAL: {
-            const { tempId, message } = action;
-            const task = {
-                id:        tempId,
-                created:   moment().toISOString(),
-                completed: false,
-                favorite:  false,
-                isTemp:    true,
-                message,
-            };
-
-            newState.tasksAndStatus.push({ task, apiStatus: { syncInProgress: syncType.CREATE }});
-            newState.tasksAndStatus = sortTasks(newState.tasksAndStatus);
+            newState.tasks = sortTasks(tasks);
             break;
         }
 
         case actionType.UPDATE_TASKS_LOCAL: {
-            const { tasksAndStatus } = action;
+            const { tasks: updatedTasks } = action;
 
-            const arrUntouchedTasks = newState.tasksAndStatus.filter((taskWithStatus) =>
-                (!tasksAndStatus.some((touchedTaskWithStatus) => taskWithStatus.task.id === touchedTaskWithStatus.task.id)));
+            const tasks = newState.tasks.map((oldTask) => {
+                const newTask = updatedTasks.find((task) => task.id === oldTask.id);
 
-            newState.tasksAndStatus = arrUntouchedTasks.concat(tasksAndStatus);
-            newState.tasksAndStatus = sortTasks(newState.tasksAndStatus);
+                return newTask ? newTask : oldTask;
+            });
+
+            newState.tasks = sortTasks(tasks);
             break;
         }
 
         case actionType.DELETE_TASK_LOCAL: {
             const { task } = action;
 
-            newState.tasksAndStatus = newState.tasksAndStatus.filter((taskWithStatus) => taskWithStatus.task.id !== task.id);
+            newState.tasks = newState.tasks.filter((taskFromArray) => taskFromArray.id !== task.id);
             break;
         }
 
         case actionType.SYNC_CREATED_TASK_SUCCESS: {
             const { task: taskFromApi } = action;
 
-            newState.tasksAndStatus.push({ task: taskFromApi, apiStatus: { syncInProgress: null } });
-            newState.tasksAndStatus = sortTasks(newState.tasksAndStatus);
+            newState.tasks.push(taskFromApi);
+            newState.tasks = sortTasks(newState.tasks);
             break;
         }
 
@@ -125,12 +104,10 @@ export default function rootReducer (state = defaultState, action) {
 
 /**
  *  state = {
- *      tasksAndStatus: [ {
- *          task: Task,
- *          apiStatus: {
- *              ...
- *          }
- *      }],
+ *      tasks: [
+ *          id: String
+ *          ...
+ *      ],
  *      filterText: String?,
  *      taskEditing: {
  *          taskId: String,
@@ -138,12 +115,6 @@ export default function rootReducer (state = defaultState, action) {
  *      }
  *
  *  }
- *
- * APIStatus = {
- *     error,
- *     syncInProgress: String?,    // Edit, Delete, Create
- *     retryAction: Fn?
- * }
  *
  * Task = {
  *      id: String,

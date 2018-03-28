@@ -1,21 +1,26 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { func } from 'prop-types';
 
-export default class HeaderSearch extends Component {
+const HeaderSearch = (props) => {
 
-    _onFilterChange = ({ target: { value }}) => {
-        const { filterTextChange } = this.props;
+    const _onFilterChange = ({ target: { value }}) => {
+        const { filterTextChange } = props;
 
         filterTextChange(value);
-    }
+    };
 
-    render () {
-        return (
-            <header>
-                <h1>Планировщик задач</h1>
-                <input
-                    onChange = { this._onFilterChange }
-                />
-            </header>
-        );
-    }
-}
+    return (
+        <header>
+            <h1>Планировщик задач</h1>
+            <input
+                onChange = { _onFilterChange }
+            />
+        </header>
+    );
+};
+
+HeaderSearch.propTypes = {
+    filterTextChange: func
+};
+
+export default HeaderSearch;

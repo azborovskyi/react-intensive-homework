@@ -4,7 +4,6 @@ export const FETCH_ALL_TASKS_SUCCESS = 'FETCH_ALL_TASKS_SUCCESS';
 // Create the task
 export const CREATE_TASK = 'CREATE_TASK';
 export const SYNC_CREATED_TASK_SUCCESS = 'SYNC_CREATED_TASK_SUCCESS';
-export const CREATE_TASK_LOCAL = 'CREATE_TASK_LOCAL';
 export const UPDATE_TASKS_LOCAL = 'UPDATE_TASKS_LOCAL';
 
 // Called when the task message is changed (but not saved/committed yet)

@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 // Instruments
 import Styles from './styles.scss';
 import HeaderSearch from '../HeaderSearch';
-import TasksList from '../TasksList';
+import ConnectedTasksList from '../TasksList';
 import TaskComposer from '../TaskComposer';
 import CompleteAll from '../CompleteAll';
 
@@ -17,7 +17,7 @@ export default class Scheduler extends Component {
     }
 
     render () {
-        const { tasksAndStatus, onTaskCreate, completeAllTasks, someUncompletedTasks, filter } = this.props;
+        const { onTaskCreate, completeAllTasks, someUncompletedTasks, filter } = this.props;
 
         return (
             <section className = { Styles.scheduler } >
@@ -29,9 +29,7 @@ export default class Scheduler extends Component {
                         <TaskComposer
                             onTaskCreate = { onTaskCreate }
                         />
-                        <TasksList
-                            tasksAndStatus = { tasksAndStatus }
-                        />
+                        <ConnectedTasksList />
                     </section>
                     <CompleteAll
                         checked = { !someUncompletedTasks }

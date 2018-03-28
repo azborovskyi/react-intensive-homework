@@ -1,7 +1,7 @@
-export const getAllTasksWithStatus = (state) => state.tasksAndStatus;
+export const getAllTasks = (state) => state.tasks;
 
-export const getTaskAndStatus = (state, taskId) => {
-    const tasksWithStatus = getAllTasksWithStatus(state);
+export const getTask = (state, taskId) => {
+    const tasks = getAllTasks(state);
 
-    return tasksWithStatus.find((taskAndStatus) => taskAndStatus.task.id === taskId);
+    return tasks.find((task) => task.id === taskId);
 };

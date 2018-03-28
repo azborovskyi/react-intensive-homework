@@ -1,7 +1,7 @@
 import * as ActionType from '../actionTypes';
 import { call, take, fork, put, select } from 'redux-saga/effects';
 import * as api from '../api';
-import { getTaskAndStatus, getAllTasksWithStatus } from '../selectors';
+import { getTask, getAllTasks } from '../selectors';
 import {
     apiTaskRequestFailed,
     apiSyncTaskCreatedSuccess,
@@ -10,7 +10,7 @@ import {
     deleteTaskLocal
 } from '../actions';
 
-function* getAllTasks () {
+function* retrieveAllTasks () {
     try {
         const tasks = yield api.getAllTasks();
 
@@ -32,24 +32,23 @@ function* createTask (message) {
 }
 
 function* deleteTask (task) {
-    yield put(updateTasksLocal([{ task, apiStatus: { syncInProgress: true } }]));
     yield api.deleteTask(task.id);
     yield put(deleteTaskLocal(task));
 }
 
 function* completeAll () {
-    const allTasksWithStatus = yield select(getAllTasksWithStatus);
-    const tasks = allTasksWithStatus.filter((taskAndStatus) => !taskAndStatus.completed).map((taskAndStatus) =>
-        ({ ...taskAndStatus.task, completed: true }));
+    const allTasks = yield select(getAllTasks);
+    const tasks = allTasks.filter((task) => !task.completed)
+        .map((task) => ({ ...task, completed: true }));
 
     if (tasks.length) {
-        yield put(updateTasksLocal(tasks.map((task) => ({ task, apiStatus: { syncInProgress: true } }))));
+        yield put(updateTasksLocal(tasks));
         yield call(api.updateTasks, tasks);
     }
 }
 
 function* updateTask (task) {
-    const { task: existingTask } = yield select(getTaskAndStatus, task.id);
+    const existingTask = yield select(getTask, task.id);
 
     if (
         existingTask.message === task.message
@@ -59,24 +58,24 @@ function* updateTask (task) {
         return;
     }
 
-    yield put(updateTasksLocal([{ task, apiStatus: { syncInProgress: true } }]));
+    yield put(updateTasksLocal([task]));
     let apiException = null;
 
     try {
         yield call(api.updateTasks, [task]);
     } catch (e) {
         apiException = e;
-        yield put(updateTasksLocal([{ task, apiStatus: { syncInProgress: false, error: e }}]));
+        yield put(updateTasksLocal([task]));
     } finally {
         if (!apiException) {
-            yield put(updateTasksLocal([{ task, apiStatus: { syncInProgress: false }}]));
+            yield put(updateTasksLocal([task]));
         }
     }
 }
 
 const sagaMappings = {};
 
-sagaMappings[ActionType.INITIAL_FETCH_ALL_TASKS] = { fn: getAllTasks };
+sagaMappings[ActionType.INITIAL_FETCH_ALL_TASKS] = { fn: retrieveAllTasks };
 sagaMappings[ActionType.CREATE_TASK] = { fn: createTask, params: ['message']};
 sagaMappings[ActionType.DELETE_TASK] = { fn: deleteTask, params: ['task']};
 sagaMappings[ActionType.EDITED_TASK_SAVE] = { fn: updateTask, params: ['task']};

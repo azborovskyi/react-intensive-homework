@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HeaderSearch should correspond to its snapshot 1`] = `
+<header>
+  <h1>
+    Планировщик задач
+  </h1>
+  <input
+    onChange={[Function]}
+  />
+</header>
+`;
