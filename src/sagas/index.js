@@ -10,13 +10,13 @@ import {
     deleteTaskLocal
 } from '../actions';
 
-function* retrieveAllTasks () {
+export function* retrieveAllTasks () {
     try {
-        const tasks = yield api.getAllTasks();
+        const tasks = yield call(api.getAllTasks);
 
         yield put(fetchTasksSuccess(tasks));
-    } catch (e) {
-        console.error(e.message);
+    } catch (err) {
+        yield put(apiTaskRequestFailed(err));
     }
 }
 
@@ -25,25 +25,32 @@ function* createTask (message) {
         const task = yield api.createTask(message);
 
         yield put(apiSyncTaskCreatedSuccess(task));
-    } catch (e) {
-        console.error(e.message);
-        yield put(apiTaskRequestFailed());
+    } catch (err) {
+        yield put(apiTaskRequestFailed(err));
     }
 }
 
 function* deleteTask (task) {
-    yield api.deleteTask(task.id);
-    yield put(deleteTaskLocal(task));
+    try {
+        yield api.deleteTask(task.id);
+        yield put(deleteTaskLocal(task));
+    } catch (err) {
+        yield put(apiTaskRequestFailed(err, task));
+    }
 }
 
-function* completeAll () {
+export function* completeAll () {
     const allTasks = yield select(getAllTasks);
     const tasks = allTasks.filter((task) => !task.completed)
         .map((task) => ({ ...task, completed: true }));
 
     if (tasks.length) {
-        yield put(updateTasksLocal(tasks));
-        yield call(api.updateTasks, tasks);
+        try {
+            yield put(updateTasksLocal(tasks));
+            yield call(api.updateTasks, tasks);
+        } catch (err) {
+            yield put(apiTaskRequestFailed(err, tasks));
+        }
     }
 }
 
@@ -59,17 +66,12 @@ function* updateTask (task) {
     }
 
     yield put(updateTasksLocal([task]));
-    let apiException = null;
-
     try {
         yield call(api.updateTasks, [task]);
-    } catch (e) {
-        apiException = e;
-        yield put(updateTasksLocal([task]));
-    } finally {
-        if (!apiException) {
-            yield put(updateTasksLocal([task]));
-        }
+    } catch (err) {
+        // Rever the changes since the api request failed
+        yield put(updateTasksLocal([existingTask]));
+        yield put(apiTaskRequestFailed(err, task));
     }
 }
 

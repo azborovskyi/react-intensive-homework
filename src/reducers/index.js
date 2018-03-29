@@ -1,5 +1,7 @@
 import * as actionType from '../actionTypes';
 import { maxMessageLength } from '../config';
+import { List, Map } from 'immutable';
+
 
 const defaultState = {
     tasks:       [],
@@ -7,25 +9,23 @@ const defaultState = {
     filterText:  null
 };
 
-export const sortTasks = (tasks) => {
-    return tasks.sort((task1, task2) => {
-        // Completed go last
-        if (task1.completed !== task2.completed) {
-            return task1.completed === true ? 1 : -1;
-        }
+export const sortTasks = (tasks) => tasks.sort((task1, task2) => {
+    // Completed go last
+    if (task1.completed !== task2.completed) {
+        return task1.completed === true ? 1 : -1;
+    }
 
-        // Favorites go first
-        if (task1.favorite !== task2.favorite) {
-            return task1.favorite === true ? -1 : 1;
-        }
+    // Favorites go first
+    if (task1.favorite !== task2.favorite) {
+        return task1.favorite === true ? -1 : 1;
+    }
 
-        if (task1.isTemp !== task2.isTemp) {
-            return task1.isTemp === true ? -1 : 1;
-        }
+    if (task1.isTemp !== task2.isTemp) {
+        return task1.isTemp === true ? -1 : 1;
+    }
 
-        return task1.created < task2.created ? 1 : -1;
-    });
-};
+    return task1.created < task2.created ? 1 : -1;
+});
 
 export default function rootReducer (state = defaultState, action) {
 
@@ -101,28 +101,3 @@ export default function rootReducer (state = defaultState, action) {
 
     return newState;
 }
-
-/**
- *  state = {
- *      tasks: [
- *          id: String
- *          ...
- *      ],
- *      filterText: String?,
- *      taskEditing: {
- *          taskId: String,
- *          message: String,
- *      }
- *
- *  }
- *
- * Task = {
- *      id: String,
- *      message: String,
- *      completed: false,
- *      favorite: false,
- *      created: date,
- *      modified: date
- * }
- *
- */
