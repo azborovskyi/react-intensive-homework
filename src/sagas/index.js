@@ -54,7 +54,7 @@ export function* completeAll () {
     }
 }
 
-function* updateTask (task) {
+export function* updateTask (task) {
     const existingTask = yield select(getTask, task.id);
 
     if (

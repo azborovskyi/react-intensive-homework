@@ -1,2 +1,2 @@
 export const maxMessageLength = 46;
-export const apiToken = '';
+export const apiToken = ''; // <-- insert the token here

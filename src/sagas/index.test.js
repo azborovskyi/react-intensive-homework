@@ -1,8 +1,8 @@
 import { put, call, select } from 'redux-saga/effects';
 import { cloneableGenerator } from 'redux-saga/utils';
-import { apiTaskRequestFailed, fetchTasksSuccess } from '../actions';
-import { getAllTasks } from '../selectors';
-import { retrieveAllTasks, completeAll } from '.';
+import { apiTaskRequestFailed, fetchTasksSuccess, updateTasksLocal } from '../actions';
+import { getAllTasks as selectorGetAllTasks, getTask as selectorGetTask } from '../selectors';
+import { retrieveAllTasks, completeAll, updateTask as sagaUpdateTask } from '.';
 import * as api from '../api';
 
 const testTasks = [
@@ -52,10 +52,43 @@ describe('Basic saga operations', () => {
 describe('Complete All Testing', () => {
     const generator = cloneableGenerator(completeAll)();
 
-    test('', () => {
+    test('Should not do anything if there are no tasks', () => {
         const iterator = generator.clone();
 
-        expect(iterator.next().value).toMatchObject(select(getAllTasks));
+        expect(iterator.next().value).toMatchObject(select(selectorGetAllTasks));
         expect(iterator.next([]).done).toEqual(true);
+    });
+});
+
+describe('Update the task', () => {
+    const completedTask = {
+        'id':        '5a7f136131a5d90001271636',
+        'message':   'Hello',
+        'completed': true,
+        'favorite':  false,
+    };
+
+    const origTask = {
+        'id':        '5a7f136131a5d90001271636',
+        'message':   'Hello',
+        'completed': false,
+        'favorite':  false
+    };
+
+    const generator = cloneableGenerator(sagaUpdateTask)(completedTask);
+
+    test('Normal update flow', () => {
+        const iterator = generator.clone();
+
+        expect(iterator.next().value).toMatchObject(select(selectorGetTask, '5a7f136131a5d90001271636'));
+        expect(iterator.next(origTask).value).toEqual(put(updateTasksLocal([completedTask])));
+        expect(iterator.next().value).toEqual(call(api.updateTasks, [completedTask]));
+    });
+
+    test('Should not send an api request if the task was not changed', () => {
+        const iterator = generator.clone();
+
+        expect(iterator.next().value).toMatchObject(select(selectorGetTask, '5a7f136131a5d90001271636'));
+        expect(iterator.next(completedTask).done).toEqual(true);
     });
 });

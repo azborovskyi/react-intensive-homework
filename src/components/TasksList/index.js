@@ -1,11 +1,10 @@
 // Core
 import React, { Component } from 'react';
-import { string, array } from 'prop-types';
+import { array } from 'prop-types';
 
 // Instruments
 import Task from '../Task';
 import FlipMove from 'react-flip-move';
-import Scheduler from '../Scheduler';
 import { connect } from 'react-redux';
 
 export class TasksList extends Component {
@@ -16,14 +15,12 @@ export class TasksList extends Component {
 
     render () {
         const { tasks } = this.props;
-        const arrTasks = tasks.map((task) => {
-            return (
-                <Task
-                    key = { task.id }
-                    task = { task }
-                />
-            );
-        });
+        const arrTasks = tasks.map((task) => (
+            <Task
+                key = { task.id }
+                task = { task }
+            />
+        ));
 
         return (
             <ul>
@@ -40,7 +37,7 @@ const mapStateToProps = (state) => {
     const { tasks, filterText } = state;
 
     const filteredTasks =
-        (filterText && filterText.length > 0)
+        filterText && filterText.length > 0
             ? tasks.filter((task) => task.message.toLowerCase().includes(filterText.toLowerCase()))
             : tasks;
 

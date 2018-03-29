@@ -1,7 +1,5 @@
 import * as actionType from '../actionTypes';
 import { maxMessageLength } from '../config';
-import { List, Map } from 'immutable';
-
 
 const defaultState = {
     tasks:       [],

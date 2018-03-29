@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import Styles from '../Scheduler/styles.scss'
+import React, { Component } from 'react';
 import { maxMessageLength } from '../../config';
 
 export default class TaskComposer extends Component {
@@ -44,8 +43,8 @@ export default class TaskComposer extends Component {
                     onKeyDown = { this._onKeyDown }
                 />
                 <button
-                    type = 'button'
                     disabled = { message.length < 1 }
+                    type = 'button'
                     onClick = { this._handleSubmit }>Добавить задачу</button>
             </form>
         );
